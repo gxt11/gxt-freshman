@@ -1,0 +1,112 @@
+﻿{% extends 'base.html' %}
+{% block title %}管理看板 - 新生报到助手{% endblock %}
+{% block content %}
+<div class="container-fluid">
+    <h2 class="mb-4"><i class="fas fa-chart-line text-primary"></i> 管理看板</h2>
+    
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h5><i class="fas fa-users"></i> 总学生数</h5>
+                    <h2 id="totalStudents">-</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h5><i class="fas fa-check-circle"></i> 已报到</h5>
+                    <h2 id="reportedStudents">-</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <h5><i class="fas fa-clock"></i> 未报到</h5>
+                    <h2 id="unreportedStudents">-</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <h5><i class="fas fa-map-pin"></i> 地标数</h5>
+                    <h2 id="totalLocations">-</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <h4><i class="fas fa-list"></i> 学生列表</h4>
+                    <table class="table table-striped mt-3">
+                        <thead>
+                            <tr>
+                                <th>学号</th>
+                                <th>姓名</th>
+                                <th>学院</th>
+                                <th>专业</th>
+                                <th>报到状态</th>
+                                <th>报到日期</th>
+                            </tr>
+                        </thead>
+                        <tbody id="studentTable">
+                            <tr><td colspan="6" class="text-center">加载中...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access_token')}`;
+
+async function loadStats() {
+    try {
+        const response = await axios.get('/api/students/profile/');
+        const students = Array.isArray(response.data) ? response.data : [response.data];
+        document.getElementById('totalStudents').textContent = students.length;
+        const reported = students.filter(s => s.report_status === 'completed').length;
+        document.getElementById('reportedStudents').textContent = reported;
+        document.getElementById('unreportedStudents').textContent = students.length - reported;
+        displayStudents(students);
+    } catch (error) {
+        console.error(error);
+    }
+    try {
+        const locResponse = await axios.get('/api/navigation/locations/');
+        document.getElementById('totalLocations').textContent = locResponse.data.length;
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+function displayStudents(students) {
+    const tbody = document.getElementById('studentTable');
+    if (students.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center">暂无数据</td></tr>';
+        return;
+    }
+    tbody.innerHTML = students.map(s => `
+        <tr>
+            <td>${s.student_id}</td>
+            <td>${s.name}</td>
+            <td>${s.department || '-'}</td>
+            <td>${s.major || '-'}</td>
+            <td><span class="badge bg-${s.report_status === 'completed' ? 'success' : 'warning'}">${s.report_status === 'completed' ? '已报到' : '未报到'}</span></td>
+            <td>${s.report_date || '-'}</td>
+        </tr>
+    `).join('');
+}
+
+loadStats();
+</script>
+{% endblock %}

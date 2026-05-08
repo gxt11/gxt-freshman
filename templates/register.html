@@ -1,0 +1,84 @@
+﻿{% extends 'base.html' %}
+{% block title %}注册 - 新生报到助手{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body p-5">
+                    <h2 class="text-center mb-4">
+                        <i class="fas fa-user-plus text-primary"></i> 新生注册
+                    </h2>
+                    <form id="registerForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">学号 *</label>
+                                <input type="text" class="form-control" id="student_id" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">姓名 *</label>
+                                <input type="text" class="form-control" id="name" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">用户名 *</label>
+                            <input type="text" class="form-control" id="username" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">密码 *</label>
+                            <input type="password" class="form-control" id="password" required>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">学院</label>
+                                <input type="text" class="form-control" id="department">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">专业</label>
+                                <input type="text" class="form-control" id="major">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">班级</label>
+                            <input type="text" class="form-control" id="class_name">
+                        </div>
+                        <div class="alert alert-danger d-none" id="errorMsg"></div>
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-check"></i> 注册
+                        </button>
+                    </form>
+                    <hr>
+                    <p class="text-center">
+                        已有账号？<a href="/login/">立即登录</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+document.getElementById('registerForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const data = {
+        username: document.getElementById('username').value,
+        password: document.getElementById('password').value,
+        student_id: document.getElementById('student_id').value,
+        name: document.getElementById('name').value,
+        department: document.getElementById('department').value,
+        major: document.getElementById('major').value,
+        class_name: document.getElementById('class_name').value
+    };
+    try {
+        await axios.post('/api/students/register/', data);
+        alert('注册成功！请登录');
+        window.location.href = '/login/';
+    } catch (error) {
+        const errorMsg = document.getElementById('errorMsg');
+        errorMsg.textContent = JSON.stringify(error.response?.data || '注册失败');
+        errorMsg.classList.remove('d-none');
+    }
+});
+</script>
+{% endblock %}

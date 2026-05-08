@@ -1,0 +1,112 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>大学生新生智能报道助手</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { font-family: 'Microsoft YaHei', Arial, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+        .header { text-align: center; color: white; margin-bottom: 50px; }
+        .header h1 { font-size: 3em; margin-bottom: 20px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .header p { font-size: 1.3em; opacity: 0.95; }
+        .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; margin-bottom: 40px; }
+        .card { background: white; border-radius: 15px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); transition: transform 0.3s; text-align: center; }
+        .card:hover { transform: translateY(-10px); }
+        .card .icon { font-size: 3em; margin-bottom: 15px; }
+        .card h3 { color: #667eea; font-size: 1.5em; margin-bottom: 15px; }
+        .card p { color: #666; line-height: 1.6; margin-bottom: 20px; }
+        .card .btn { display: inline-block; padding: 12px 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; border-radius: 25px; font-weight: bold; transition: opacity 0.3s; border: none; }
+        .card .btn:hover { opacity: 0.8; }
+        .features { background: white; border-radius: 15px; padding: 40px; margin-top: 40px; }
+        .features h2 { color: #667eea; margin-bottom: 30px; text-align: center; }
+        .feature-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .feature-item { padding: 20px; background: #f8f9fa; border-radius: 10px; border-left: 4px solid #667eea; }
+        .feature-item h4 { color: #333; margin-bottom: 10px; }
+        .footer { text-align: center; color: white; margin-top: 50px; opacity: 0.8; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1> 大学生新生智能报道助手</h1>
+            <p>让报到流程更简单、更高效</p>
+        </div>
+
+        <div class="cards">
+            <div class="card">
+                <div class="icon"></div>
+                <h3>新生注册</h3>
+                <p>填写个人信息，完成账号注册，开始报到流程</p>
+                <a href="/register/" class="btn">立即注册 </a>
+            </div>
+
+            <div class="card">
+                <div class="icon"></div>
+                <h3>登录系统</h3>
+                <p>已有账号？登录继续完成报到流程</p>
+                <a href="/login/" class="btn">立即登录 </a>
+            </div>
+
+            <div class="card">
+                <div class="icon"></div>
+                <h3>我的报到</h3>
+                <p>查看报到状态，填报报到信息，跟踪进度</p>
+                <a href="/student/dashboard/" class="btn">查看报到 </a>
+            </div>
+
+            <div class="card">
+                <div class="icon"></div>
+                <h3>校园导航</h3>
+                <p>查询校园地标，规划路线，快速找到目的地</p>
+                <a href="/student/navigation/" class="btn">开始导航 </a>
+            </div>
+
+            <div class="card">
+                <div class="icon"></div>
+                <h3>API文档</h3>
+                <p>查看完整的API接口文档，支持在线测试</p>
+                <a href="/swagger/" class="btn">查看文档 </a>
+            </div>
+
+            <div class="card">
+                <div class="icon"></div>
+                <h3>管理后台</h3>
+                <p>系统管理和数据维护（需要管理员权限）</p>
+                <a href="/admin/" class="btn">进入管理 </a>
+            </div>
+        </div>
+
+        <div class="features">
+            <h2> 核心功能</h2>
+            <div class="feature-list">
+                <div class="feature-item">
+                    <h4> 用户认证</h4>
+                    <p>JWT Token认证，支持登录、注册、Token刷新</p>
+                </div>
+                <div class="feature-item">
+                    <h4> 报到填报</h4>
+                    <p>在线填写报到信息，自动更新状态</p>
+                </div>
+                <div class="feature-item">
+                    <h4> 校园导航</h4>
+                    <p>地标查询、路线规划、高德地图API</p>
+                </div>
+                <div class="feature-item">
+                    <h4> 数据管理</h4>
+                    <p>Admin后台管理，数据可视化</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>&copy; 2026 Freshman Report System | Django + DRF + PostgreSQL</p>
+            <p>开发者: gxt11</p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,136 @@
+﻿{% extends 'base.html' %}
+{% block title %}我的报到 - 新生报到助手{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2><i class="fas fa-tachometer-alt text-primary"></i> 报到状态</h2>
+        </div>
+    </div>
+    
+    <div class="row mb-4">
+        <div class="col-md-4 mb-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h5><i class="fas fa-user"></i> 个人信息</h5>
+                    <hr>
+                    <div id="studentInfo">加载中...</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h5><i class="fas fa-clipboard-check"></i> 报到状态</h5>
+                    <hr>
+                    <h2 id="reportStatus">未开始</h2>
+                    <p id="reportTime"></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <h5><i class="fas fa-map-marker-alt"></i> 校园导航</h5>
+                    <hr>
+                    <button class="btn btn-light" onclick="location.href='/student/navigation/'">
+                        <i class="fas fa-location-arrow"></i> 查看地图
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <h4><i class="fas fa-edit text-primary"></i> 报到信息填报</h4>
+                    <hr>
+                    <form id="reportForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">报到日期</label>
+                                <input type="date" class="form-control" id="report_date" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">联系电话</label>
+                                <input type="tel" class="form-control" id="phone">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">家庭住址</label>
+                            <textarea class="form-control" id="address" rows="2"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">备注</label>
+                            <textarea class="form-control" id="notes" rows="2"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> 提交报到信息
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5><i class="fas fa-info-circle text-primary"></i> 快速操作</h5>
+                    <hr>
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-outline-primary" onclick="location.reload()">
+                            <i class="fas fa-sync"></i> 刷新状态
+                        </button>
+                        <button class="btn btn-outline-info" onclick="location.href='/swagger/'">
+                            <i class="fas fa-book"></i> API文档
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('access_token')}`;
+
+async function loadProfile() {
+    try {
+        const response = await axios.get('/api/students/profile/');
+        const profile = response.data;
+        document.getElementById('studentInfo').innerHTML = `
+            <p><strong>学号：</strong>${profile.student_id}</p>
+            <p><strong>姓名：</strong>${profile.name}</p>
+            <p><strong>学院：</strong>${profile.department || '未填写'}</p>
+            <p><strong>专业：</strong>${profile.major || '未填写'}</p>
+        `;
+        document.getElementById('reportStatus').textContent = profile.report_status === 'completed' ? '已完成' : '未完成';
+        document.getElementById('reportTime').textContent = profile.report_date ? `报到日期：${profile.report_date}` : '';
+    } catch (error) {
+        alert('请先登录');
+        window.location.href = '/login/';
+    }
+}
+
+document.getElementById('reportForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const data = {
+        report_date: document.getElementById('report_date').value,
+        phone: document.getElementById('phone').value,
+        address: document.getElementById('address').value,
+        notes: document.getElementById('notes').value
+    };
+    try {
+        await axios.patch('/api/students/profile/', data);
+        alert('报到信息提交成功！');
+        location.reload();
+    } catch (error) {
+        alert('提交失败：' + JSON.stringify(error.response?.data));
+    }
+});
+
+loadProfile();
+</script>
+{% endblock %}

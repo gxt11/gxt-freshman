@@ -1,0 +1,127 @@
+﻿{% extends 'base.html' %}
+{% block title %}校园导航 - 新生报到助手{% endblock %}
+{% block content %}
+<div class="container">
+    <h2 class="mb-4"><i class="fas fa-map-marked-alt text-primary"></i> 校园导航</h2>
+    
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5>查询地标</h5>
+                    <div class="mb-3">
+                        <label class="form-label">地标类型</label>
+                        <select class="form-select" id="locationType">
+                            <option value="">全部</option>
+                            <option value="gate">校门</option>
+                            <option value="building">教学楼</option>
+                            <option value="dorm">宿舍楼</option>
+                            <option value="canteen">食堂</option>
+                            <option value="library">图书馆</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary w-100" onclick="loadLocations()">
+                        <i class="fas fa-search"></i> 查询
+                    </button>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-body">
+                    <h5>地标列表</h5>
+                    <div id="locationList" class="list-group">
+                        <p class="text-muted">加载中...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <h5>路线规划</h5>
+                    <div class="row mb-3">
+                        <div class="col-md-5">
+                            <label class="form-label">起点</label>
+                            <select class="form-select" id="startLocation"></select>
+                        </div>
+                        <div class="col-md-5">
+                            <label class="form-label">终点</label>
+                            <select class="form-select" id="endLocation"></select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">&nbsp;</label>
+                            <button class="btn btn-success w-100" onclick="calculateRoute()">
+                                <i class="fas fa-route"></i> 规划
+                            </button>
+                        </div>
+                    </div>
+                    <div id="routeResult" class="alert alert-info d-none">
+                        <h6><i class="fas fa-info-circle"></i> 路线信息</h6>
+                        <p id="routeInfo"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script>
+let locations = [];
+
+async function loadLocations() {
+    const type = document.getElementById('locationType').value;
+    const url = type ? `/api/navigation/locations/by_type/?type=${type}` : '/api/navigation/locations/';
+    try {
+        const response = await axios.get(url);
+        locations = response.data;
+        displayLocations();
+        updateSelects();
+    } catch (error) {
+        alert('加载失败');
+    }
+}
+
+function displayLocations() {
+    const list = document.getElementById('locationList');
+    if (locations.length === 0) {
+        list.innerHTML = '<p class="text-muted">暂无数据</p>';
+        return;
+    }
+    list.innerHTML = locations.map(loc => `
+        <div class="list-group-item">
+            <strong>${loc.name}</strong><br>
+            <small class="text-muted">${loc.description || ''}</small>
+        </div>
+    `).join('');
+}
+
+function updateSelects() {
+    const options = locations.map(loc => `<option value="${loc.id}">${loc.name}</option>`).join('');
+    document.getElementById('startLocation').innerHTML = options;
+    document.getElementById('endLocation').innerHTML = options;
+}
+
+async function calculateRoute() {
+    const start = document.getElementById('startLocation').value;
+    const end = document.getElementById('endLocation').value;
+    try {
+        const response = await axios.post('/api/navigation/calculate-route/', {
+            start_location: parseInt(start),
+            end_location: parseInt(end),
+            route_type: 'walking'
+        });
+        const result = response.data.data;
+        document.getElementById('routeInfo').innerHTML = `
+            <strong>距离：</strong>${result.distance}米<br>
+            <strong>预计时间：</strong>${result.duration}分钟
+        `;
+        document.getElementById('routeResult').classList.remove('d-none');
+    } catch (error) {
+        alert('路线规划失败');
+    }
+}
+
+loadLocations();
+</script>
+{% endblock %}
